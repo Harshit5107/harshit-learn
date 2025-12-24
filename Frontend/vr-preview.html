@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>VR Preview | Harshit-Learn</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;700&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      margin: 0;
+      background: #0B0F1A;
+      font-family: 'Poppins', sans-serif;
+      color: #F1F5F9;
+      overflow: hidden;
+    }
+
+    .container {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+    }
+
+    video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      background: black;
+    }
+
+    .top-bar {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      z-index: 10;
+      font-size: 0.9rem;
+      color: #00F7FF;
+    }
+
+    .overlay-text {
+      position: absolute;
+      bottom: 110px;
+      left: 50%;
+      transform: translateX(-50%);
+      text-align: center;
+      max-width: 90%;
+      z-index: 10;
+    }
+
+    .overlay-text h1 {
+      font-size: 2.2rem;
+      margin-bottom: 10px;
+      background: linear-gradient(90deg, #00F7FF, #9D4EDD);
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+
+    .overlay-text p {
+      color: #94A3B8;
+      font-size: 1rem;
+    }
+
+    .controls {
+      position: absolute;
+      bottom: 25px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 15px;
+      z-index: 10;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .btn {
+      padding: 12px 22px;
+      border-radius: 999px;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      background: rgba(15, 23, 42, 0.85);
+      color: #00F7FF;
+      border: 1px solid rgba(0, 247, 255, 0.4);
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+    }
+
+    video {
+     transition: opacity 0.5s ease;
+    }
+
+    .btn:hover {
+      background: rgba(0, 247, 255, 0.15);
+      transform: translateY(-2px);
+    }
+
+    .btn.primary {
+      background: linear-gradient(90deg, #00FF9D, #00cc7a);
+      color: #0B0F1A;
+      border: none;
+      box-shadow: 0 6px 20px rgba(0,255,157,0.35);
+    }
+
+    .back-btn {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      z-index: 10;
+    }
+
+    .vr-hud {
+      position: absolute;
+      top: 70px;
+      right: 20px;
+      background: rgba(0,0,0,0.4);
+      padding: 10px 16px;
+      border-radius: 12px;
+      font-size: 0.85rem;
+      color: #00FF9D;
+      display: flex;
+      gap: 15px;
+    }
+
+    .scene-dots {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      margin-top: 10px;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #475569;
+    }
+
+.dot.active {
+  background: #00F7FF;
+}
+
+
+
+    @media (max-width: 768px) {
+      .overlay-text h1 {
+        font-size: 1.6rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+
+  <div class="vr-hud">
+  <span>🧠 AI Active</span>
+  <span>🔋 Focus 92%</span>
+  </div>
+
+  <audio id="switchSound" src="audio/switch.mp3"></audio>
+
+
+  <!-- BACK -->
+  <button class="btn back-btn" onclick="goBack()">← Back</button>
+
+  <!-- TOP INFO -->
+  <div class="top-bar">
+    Built by <strong>Harshit</strong> • Interactive VR Preview
+  </div>
+
+  <!-- VIDEO -->
+  <video id="vrVideo" autoplay muted playsinline>
+    <source id="vrSource" src="Video/vr-ai-mentor.mp4" type="video/mp4">
+    Your browser does not support video.
+  </video>
+
+  <!-- TEXT -->
+  <div class="overlay-text">
+    <h1>AI Mentor Active</h1>
+    <p>Personalized AI guidance inside immersive classrooms.</p>
+  </div>
+
+  
+
+  <!-- CONTROLS -->
+  <div class="controls">
+    <button class="btn" onclick="playScene('ai')">🧠 AI Mentor</button>
+    <button class="btn" onclick="playScene('progress')">📊 Progress</button>
+    <button class="btn" onclick="playScene('practice')">✋ Practice</button>
+    <button class="btn primary" onclick="restart()">▶ Restart</button>
+  
+  </div>
+  <div class="scene-dots">
+  <span class="dot active"></span>
+  <span class="dot"></span>
+  <span class="dot"></span>
+  </div>
+
+
+</div>
+
+<script>
+
+  document.getElementById("switchSound").play();
+
+  const video = document.getElementById("vrVideo");
+  const source = document.getElementById("vrSource");
+  const title = document.querySelector(".overlay-text h1");
+  const desc = document.querySelector(".overlay-text p");
+
+  // 🔥 TRY AUTOPLAY ON LOAD
+  window.addEventListener("load", () => {
+    video.muted = true;
+    video.play().catch(() => {
+      console.log("Autoplay blocked, waiting for user interaction");
+    });
+  });
+
+  // 🔥 USER INTERACTION FALLBACK (IMPORTANT)
+  document.body.addEventListener("click", () => {
+    if (video.paused) {
+      video.play();
+    }
+  }, { once: true });
+
+  function playScene(scene) {
+    video.pause();
+    video.currentTime = 0;
+
+    if (scene === "ai") {
+      source.src = "Video/vr-ai-mentor.mp4";
+      title.innerText = "AI Mentor Active";
+      desc.innerText = "Personalized AI guidance inside immersive classrooms.";
+    }
+
+    if (scene === "progress") {
+      source.src = "Video/vr-learning-progress.mp4";
+      title.innerText = "Learning Progress";
+      desc.innerText = "Track performance, skills, and achievements in real time.";
+    }
+
+    if (scene === "practice") {
+      source.src = "Video/vr-virtual-practice.mp4";
+      title.innerText = "Hands-on Practice";
+      desc.innerText = "Interactive virtual labs and real-world simulations.";
+    }
+
+    video.load();
+
+    video.oncanplay = () => {
+      video.play();
+    };
+  }
+
+      function playScene(scene) {
+      video.style.opacity = 0;
+
+      setTimeout(() => {
+        video.pause();
+        video.currentTime = 0;
+
+        if (scene === "ai") {
+          source.src = "Video/vr-ai-mentor.mp4";
+          title.innerText = "AI Mentor Active";
+          desc.innerText = "Personalized AI guidance inside immersive classrooms.";
+        }
+
+        if (scene === "progress") {
+          source.src = "Video/vr-learning-progress.mp4";
+          title.innerText = "Learning Progress";
+          desc.innerText = "Track performance, skills, and achievements in real time.";
+        }
+
+        if (scene === "practice") {
+          source.src = "Video/vr-virtual-practice.mp4";
+          title.innerText = "Hands-on Practice";
+          desc.innerText = "Interactive virtual labs and real-world simulations.";
+        }
+
+        video.load();
+        video.play();
+        video.style.opacity = 1;
+      }, 300);
+    }
+    
+
+let autoDemo = setInterval(() => {
+      const scenes = ["ai", "progress", "practice"];
+      currentIndex = (currentIndex + 1) % scenes.length;
+      playScene(scenes[currentIndex]);
+    }, 15000);
+
+
+
+  function restart() {
+    video.pause();
+    video.currentTime = 0;
+    video.play();
+  }
+
+  function goBack() {
+    window.location.href = "frontend.html";
+  }
+</script>
+
+
+
+</body>
+</html>

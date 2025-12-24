@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>My Learning | Harshit-Learn</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      margin: 0;
+      background: #0B0F1A;
+      color: #F1F5F9;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: auto;
+      padding: 40px 20px;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+    }
+
+    h1 {
+      font-family: 'Poppins', sans-serif;
+      color: #00F7FF;
+      margin: 0;
+    }
+
+    .back-btn {
+      background: transparent;
+      border: 1px solid #00F7FF;
+      color: #00F7FF;
+      padding: 8px 18px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .course-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 25px;
+    }
+
+    .course-card {
+      background: rgba(30,41,59,0.6);
+      border-radius: 18px;
+      padding: 25px;
+      border: 1px solid rgba(0,247,255,0.15);
+    }
+
+    .course-card h3 {
+      margin-top: 0;
+      color: #00FF9D;
+    }
+
+    .progress-bar {
+      height: 10px;
+      background: #1E293B;
+      border-radius: 20px;
+      overflow: hidden;
+      margin: 15px 0;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg,#00FF9D,#00F7FF);
+      width: 0%;
+      transition: width 0.4s ease;
+    }
+
+    .badge-complete {
+      box-shadow: 0 0 12px rgba(0,255,157,0.4);
+    }
+
+
+    .btn {
+      margin-top: 12px;
+      padding: 12px 18px;
+      border-radius: 25px;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .btn-primary {
+      background: #00FF9D;
+      color: #0B0F1A;
+    }
+
+    .empty {
+      text-align: center;
+      color: #94A3B8;
+      margin-top: 80px;
+    }
+
+    .btn-cert {
+      background: transparent;
+      border: 1px solid #00F7FF;
+      color: #00F7FF;
+      margin-left: 10px;
+    }
+
+    .btn-cert:hover {
+      background: rgba(0,247,255,0.1);
+    }
+
+
+    .badge-complete {
+      display: inline-block;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: rgba(0,255,157,0.12);
+      color: #00FF9D;
+      font-weight: 700;
+      margin-left: 10px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- 🔙 HEADER -->
+  <div class="top-bar">
+    <h1>📚 My Learning</h1>
+    <button class="back-btn" onclick="goHome()">Home</button>
+  </div>
+
+  <div id="myCourses" class="course-grid"></div>
+
+  <div id="emptyState" class="empty" style="display:none;">
+    You haven’t enrolled in any course yet.
+  </div>
+
+</div>
+
+<script>
+  const API_BASE = "http://localhost:5000/api";
+  const token = localStorage.getItem("token");
+
+  if (!token) {
+    alert("Please login first 🔐");
+    window.location.href = "frontend.html";
+  }
+
+  function goHome() {
+    window.location.href = "frontend.html";
+  }
+
+  // parse user id from token
+  function parseJwtId(tok) {
+    try {
+      const payload = tok.split(".")[1].replace(/-/g, "+").replace(/_/g, "/");
+      const json = decodeURIComponent(atob(payload).split('').map(function(c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+      }).join(''));
+      const obj = JSON.parse(json);
+      return obj.id || obj._id || null;
+    } catch {
+      return null;
+    }
+  }
+
+  const userId = parseJwtId(token);
+  if (!userId) {
+    localStorage.clear();
+    window.location.href = "frontend.html";
+  }
+
+  async function downloadCertificate(courseId) {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    alert("Please login first");
+    return;
+  }
+
+  // Open the certificate template which will fetch data and auto-download
+  // It uses localStorage token so no extra auth param needed.
+  const userName =
+  localStorage.getItem("username") ||
+  localStorage.getItem("name") ||
+  "Student";
+
+window.open(
+  `http://localhost:5000/certificate-templete.html?courseId=${courseId}&name=${encodeURIComponent(userName)}`,
+  "_blank"
+);
+
+
+}
+
+
+  async function loadMyCourses() {
+    try {
+      // get all courses and filter to those where enrolledStudents includes userId
+      const res = await fetch(`${API_BASE}/courses`, { headers: { Authorization: "Bearer " + token }});
+      if (!res.ok) {
+        console.error(await res.text());
+        alert("Failed to load courses from server.");
+        return;
+      }
+      const data = await res.json();
+      const allCourses = Array.isArray(data) ? data : (data.courses || []);
+      const my = allCourses.filter(c => {
+        const enrolled = Array.isArray(c.enrolledStudents) ? c.enrolledStudents : (c.enrolledStudents || []);
+        return enrolled.map(id => id && id.toString ? id.toString() : id).includes(userId);
+      });
+
+      const root = document.getElementById("myCourses");
+      root.innerHTML = "";
+
+      if (my.length === 0) {
+        document.getElementById("emptyState").style.display = "block";
+        return;
+      } else {
+        document.getElementById("emptyState").style.display = "none";
+      }
+
+      my.forEach(course => {
+        // find progress object for this user
+        const progressArray = Array.isArray(course.progress) ? course.progress : [];
+        const p = progressArray.find(pr => {
+          const sid = pr && pr.student && pr.student.toString ? pr.student.toString() : (pr && pr.student);
+          return sid === userId;
+        });
+        const value = p && typeof p.value === "number" ? Math.round(p.value) : 0;
+
+        // build card
+        const card = document.createElement("div");
+        card.className = "course-card";
+
+        const titleLine = document.createElement("div");
+        const h3 = document.createElement("h3");
+        h3.innerText = course.title || "Untitled Course";
+        titleLine.appendChild(h3);
+
+        if (value >= 100) {
+          const badge = document.createElement("span");
+          badge.className = "badge-complete";
+          badge.innerText = "Completed";
+          titleLine.appendChild(badge);
+        }
+
+        const desc = document.createElement("p");
+        desc.innerText = course.description || "";
+
+        const progressWrap = document.createElement("div");
+        progressWrap.innerHTML = `<strong>Progress: ${value}%</strong>
+          <div class="progress-bar"><div class="progress-fill" style="width:${value}%;"></div></div>`;
+
+        const openBtn = document.createElement("button");
+        openBtn.className = "btn btn-primary";
+        openBtn.innerText = "Open";
+        openBtn.onclick = () => window.location.href = `course.html?id=${course._id || course.id}`;
+
+        card.appendChild(titleLine);
+        card.appendChild(desc);
+        card.appendChild(progressWrap);
+
+        // open button
+        const btnGroup = document.createElement("div");
+        btnGroup.className = "btn-group";
+
+        btnGroup.appendChild(openBtn);
+
+        if (value >= 100) {
+          const certBtn = document.createElement("button");
+          certBtn.className = "btn btn-cert";
+          certBtn.innerText = "🎓 Download Certificate";
+          certBtn.onclick = () => downloadCertificate(course._id || course.id);
+          btnGroup.appendChild(certBtn);
+        }
+
+        card.appendChild(btnGroup);
+
+
+
+        root.appendChild(card);
+      });
+
+    } catch (err) {
+      console.error(err);
+      alert("Network error when loading courses.");
+    }
+  }
+
+  loadMyCourses();
+</script>
+
+</body>
+</html>

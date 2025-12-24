@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Create Course | Harshit-Learn</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body {
+      background:#0B0F1A;
+      color:#F1F5F9;
+      font-family: Inter, sans-serif;
+      padding:40px;
+    }
+
+    .box {
+      max-width:500px;
+      margin:auto;
+      background:#0F172A;
+      padding:30px;
+      border-radius:16px;
+      border:1px solid rgba(0,247,255,0.2);
+    }
+
+    h1 { color:#00F7FF; text-align:center; }
+
+    input, textarea {
+      width:100%;
+      padding:12px;
+      margin-top:12px;
+      border-radius:10px;
+      border:none;
+      outline:none;
+      background:#1E293B;
+      color:#F1F5F9;
+    }
+
+    button {
+      margin-top:20px;
+      width:100%;
+      padding:12px;
+      border:none;
+      border-radius:25px;
+      background:#00FF9D;
+      color:#0B0F1A;
+      font-weight:700;
+      cursor:pointer;
+    }
+  </style>
+</head>
+<body>
+
+<div class="box">
+  <h1>Create Course</h1>
+
+  <input id="title" placeholder="Course Title" />
+  <textarea id="description" placeholder="Course Description"></textarea>
+  <input id="category" placeholder="Category (AI, Web, ML etc.)" />
+
+  <button onclick="createCourse()">Create Course</button>
+</div>
+
+<script>
+const API = "http://localhost:5000/api";
+const token = localStorage.getItem("token");
+const role = localStorage.getItem("role");
+
+if (!token) {
+  alert("Login required");
+  location.href = "frontend.html";
+}
+
+if (role !== "skill_provider") {
+  alert("Only Skill Providers can create courses");
+  location.href = "frontend.html";
+}
+
+async function createCourse() {
+  const title = document.getElementById("title").value;
+  const description = document.getElementById("description").value;
+  const category = document.getElementById("category").value;
+
+  if (!title || !description || !category) {
+    alert("All fields required");
+    return;
+  }
+
+  try {
+    // 1️⃣ CREATE COURSE
+    const res = await fetch(`${API}/courses`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token
+      },
+      body: JSON.stringify({ title, description, category })
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      alert(data.message || "Failed to create course");
+      return;
+    }
+
+    const courseId = data.course._id;
+
+    // 2️⃣ AUTO-PUBLISH COURSE 🔥
+    const publishRes = await fetch(`${API}/courses/${courseId}/publish`, {
+      method: "PUT",
+      headers: {
+        Authorization: "Bearer " + token
+      }
+    });
+
+    const publishData = await publishRes.json();
+
+    if (!publishRes.ok) {
+      alert("Course created but publish failed ❌");
+      return;
+    }
+
+    alert("Course created & published successfully ✅");
+    location.href = "frontend.html";
+
+  } catch (err) {
+    console.error(err);
+    alert("Server error ❌");
+  }
+}
+</script>
+
+
+</body>
+</html>
