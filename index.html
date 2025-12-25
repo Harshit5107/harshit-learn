@@ -1605,7 +1605,7 @@ Harshit-Learn. All rights reserved. <br>
         }
 
         function openVRDemo() {
-            window.location.href = "vr-preview.html";
+            window.href = "./vr-preview.html";
         }
 
         function startLearningHome() {
@@ -1618,7 +1618,7 @@ Harshit-Learn. All rights reserved. <br>
             }
 
             // ✅ same behavior as navbar Learning button
-            window.location.href = "my-learning.html";
+            window.href = "./my-learning.html";
         }
 
 
@@ -1632,7 +1632,7 @@ Harshit-Learn. All rights reserved. <br>
             }
 
             // ✅ Step 7 entry
-            window.location.href = "my-learning.html";
+            window.href = "./my-learning.html";
         }
 
         // Filter functionality for marketplace
@@ -1660,7 +1660,7 @@ Harshit-Learn. All rights reserved. <br>
         }
 
         function startLearning(courseId) {
-        window.location.href = `course.html?id=${courseId}`;
+        window.location.href = `./course.html?id=${courseId}`;
         }
 
         // Mobile menu toggle
@@ -1703,7 +1703,7 @@ Harshit-Learn. All rights reserved. <br>
             }
 
             // ✅ CORRECT PAGE
-            window.location.href = "my-learning.html";
+            window.location.href = "./my-learning.html";
         }
 
 
@@ -2012,7 +2012,7 @@ async function registerUser() {
                         Hi, ${userName}
                     </span>
 
-                    <button class="btn btn-secondary" onclick="logoutUser()">
+                    <button class="btn btn-secondary" onclick="()">
                         Logout
                     </button>
                 `;
@@ -2042,7 +2042,7 @@ async function registerUser() {
             updateNavbar();
 
             // ✅ ALWAYS go to home
-            window.location.href = "index.html";
+            window.href = "./index.html";
         }
 
 
@@ -2088,7 +2088,7 @@ async function registerUser() {
             return;
         }
 
-        window.location.href = "create-course.html";
+        window.href = "./create-course.html";
         }
 
 

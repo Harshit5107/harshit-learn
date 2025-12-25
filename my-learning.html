@@ -157,11 +157,13 @@
 
   if (!token) {
     alert("Please login first 🔐");
-    window.location.href = "index.html";
+    window.location.href = "./index.html";
+
   }
 
   function goHome() {
-    window.location.href = "index.html";
+    window.location.href = "./index.html";
+
   }
 
   // parse user id from token
@@ -181,7 +183,8 @@
   const userId = parseJwtId(token);
   if (!userId) {
     localStorage.clear();
-    window.location.href = "index.html";
+    window.location.href = "./index.html";
+
   }
 
   async function downloadCertificate(courseId) {
@@ -264,7 +267,7 @@
         const openBtn = document.createElement("button");
         openBtn.className = "btn btn-primary";
         openBtn.innerText = "Open";
-        openBtn.onclick = () => window.location.href = `course.html?id=${course._id || course.id}`;
+        openBtn.onclick = () => window.location.href = `./course.html?id=${course._id || course.id}`;
 
         card.appendChild(titleLine);
         card.appendChild(desc);
