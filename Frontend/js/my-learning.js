@@ -1,5 +1,6 @@
 // my-learning.js
-const API_BASE = "http://localhost:5000/api";
+const API_BASE = "https://harshit-learn.onrender.com/api";
+
 const token = localStorage.getItem("token");
 
 function parseJwtId(tok) {

@@ -151,7 +151,8 @@
 </div>
 
 <script>
-  const API_BASE = "http://localhost:5000/api";
+  const API_BASE = "https://harshit-learn.onrender.com/api";
+
   const token = localStorage.getItem("token");
 
   if (!token) {
@@ -190,19 +191,15 @@
     return;
   }
 
-  // Open the certificate template which will fetch data and auto-download
-  // It uses localStorage token so no extra auth param needed.
   const userName =
-  localStorage.getItem("username") ||
-  localStorage.getItem("name") ||
-  "Student";
+    localStorage.getItem("username") ||
+    localStorage.getItem("name") ||
+    "Student";
 
-window.open(
-  `http://localhost:5000/certificate-templete.html?courseId=${courseId}&name=${encodeURIComponent(userName)}`,
-  "_blank"
-);
-
-
+  window.open(
+    `https://harshit-learn.onrender.com/certificate-templete.html?courseId=${courseId}&name=${encodeURIComponent(userName)}`,
+    "_blank"
+  );
 }
 
 

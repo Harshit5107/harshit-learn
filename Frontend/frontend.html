@@ -1555,9 +1555,11 @@ Harshit-Learn. All rights reserved. <br>
 
     <script>
 
-        const API_BASE = "http://localhost:5000/api";
+        const API_BASE = "https://harshit-learn.onrender.com/api";
+
 
         // Create animated particles
+        
         function createParticles() {
             const particlesContainer = document.getElementById('particles');
             const particleCount = 30;
@@ -1705,42 +1707,40 @@ Harshit-Learn. All rights reserved. <br>
         }
 
 
+async function registerUser() {
+  const name = document.getElementById("regName").value;
+  const email = document.getElementById("regEmail").value;
+  const password = document.getElementById("regPassword").value;
 
-        async function registerUser() {
-        const name = document.getElementById("regName").value;
-        const email = document.getElementById("regEmail").value;
-        const password = document.getElementById("regPassword").value;
+  if (!name || !email || !password) {
+    alert("All fields required ❌");
+    return;
+  }
 
+  try {
+    const res = await fetch(`${API_BASE}/auth/register`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ name, email, password })
+    });
 
+    const data = await res.json();
 
-        if (!name || !email || !password) {
-            alert("All fields required ❌");
-            return;
-        }
+    if (res.ok) {
+      alert("Registration successful ✅");
+      closeRegister();
+    } else {
+      alert(data.message || "Registration failed ❌");
+    }
 
-        try {
-            const res = await fetch("http://localhost:5000/api/auth/register", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ name, email, password })
-            });
+  } catch (error) {
+    alert("Server error ❌");
+    console.error(error);
+  }
+}
 
-            const data = await res.json();
-
-            if (res.ok) {
-            alert("Registration successful ✅");
-            closeRegister();
-            } else {
-            alert(data.message || "Registration failed ❌");
-            }
-
-        } catch (error) {
-            alert("Server error ❌");
-            console.error(error);
-        }
-        }
 
         function openLogin() {
         document.getElementById("loginBox").style.display = "flex";
