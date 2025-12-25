@@ -1605,7 +1605,7 @@ Harshit-Learn. All rights reserved. <br>
         }
 
         function openVRDemo() {
-            window.href = "./vr-preview.html";
+            window.location.href = "/harshit-learn/vr-preview.html";
         }
 
         function startLearningHome() {
@@ -1617,8 +1617,7 @@ Harshit-Learn. All rights reserved. <br>
                 return;
             }
 
-            // ✅ same behavior as navbar Learning button
-            window.href = "./my-learning.html";
+            window.location.href = "/harshit-learn/my-learning.html";
         }
 
 
@@ -1627,12 +1626,11 @@ Harshit-Learn. All rights reserved. <br>
 
             if (!token) {
                 alert("Please login first 🔐");
-                openLogin();   // tumhara existing login popup
+                openLogin();
                 return;
             }
 
-            // ✅ Step 7 entry
-            window.href = "./my-learning.html";
+            window.location.href = "/harshit-learn/my-learning.html";
         }
 
         // Filter functionality for marketplace
@@ -1660,7 +1658,7 @@ Harshit-Learn. All rights reserved. <br>
         }
 
         function startLearning(courseId) {
-        window.location.href = `./course.html?id=${courseId}`;
+            window.location.href = `/harshit-learn/course.html?id=${courseId}`;
         }
 
         // Mobile menu toggle
@@ -1693,7 +1691,7 @@ Harshit-Learn. All rights reserved. <br>
         }
 
         function goToDashboard(e) {
-            if (e && typeof e.preventDefault === "function") e.preventDefault();
+            if (e && e.preventDefault) e.preventDefault();
 
             const token = localStorage.getItem("token");
             if (!token) {
@@ -1702,10 +1700,8 @@ Harshit-Learn. All rights reserved. <br>
                 return;
             }
 
-            // ✅ CORRECT PAGE
-            window.location.href = "./my-learning.html";
+            window.location.href = "/harshit-learn/my-learning.html";
         }
-
 
 async function registerUser() {
   const name = document.getElementById("regName").value;
@@ -2012,9 +2008,10 @@ async function registerUser() {
                         Hi, ${userName}
                     </span>
 
-                    <button class="btn btn-secondary" onclick="()">
+                    <button class="btn btn-secondary" onclick="logoutUser()">
                         Logout
                     </button>
+
                 `;
             } else {
                 navActions.innerHTML = `
@@ -2030,20 +2027,10 @@ async function registerUser() {
 
 
         function logoutUser() {
-            localStorage.removeItem("token");
-            localStorage.removeItem("userName");
-            localStorage.removeItem("role");
-            localStorage.removeItem("userId");
-            localStorage.removeItem("skills");
-
-            const dashboard = document.getElementById("user-dashboard");
-            if (dashboard) dashboard.style.display = "none";
-
-            updateNavbar();
-
-            // ✅ ALWAYS go to home
-            window.href = "./index.html";
-        }
+    localStorage.clear();
+    updateNavbar();
+    window.location.href = "/harshit-learn/index.html";
+}
 
 
 
@@ -2080,15 +2067,16 @@ async function registerUser() {
         });
 
 
+        
         function goCreateCourse() {
-        const role = localStorage.getItem("role");
+            const role = localStorage.getItem("role");
 
-        if (role !== "skill_provider") {
-            alert("Only Skill Providers can create courses ❌");
-            return;
-        }
+            if (role !== "skill_provider") {
+                alert("Only Skill Providers can create courses ❌");
+                return;
+            }
 
-        window.href = "./create-course.html";
+            window.location.href = "/harshit-learn/create-course.html";
         }
 
 
