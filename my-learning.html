@@ -157,11 +157,11 @@
 
   if (!token) {
     alert("Please login first 🔐");
-    window.location.href = "frontend.html";
+    window.location.href = "index.html";
   }
 
   function goHome() {
-    window.location.href = "frontend.html";
+    window.location.href = "index.html";
   }
 
   // parse user id from token
@@ -181,7 +181,7 @@
   const userId = parseJwtId(token);
   if (!userId) {
     localStorage.clear();
-    window.location.href = "frontend.html";
+    window.location.href = "index.html";
   }
 
   async function downloadCertificate(courseId) {

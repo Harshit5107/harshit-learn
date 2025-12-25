@@ -2034,19 +2034,17 @@ async function registerUser() {
             localStorage.removeItem("userName");
             localStorage.removeItem("role");
             localStorage.removeItem("userId");
+            localStorage.removeItem("skills");
 
-            // Dashboard hide
             const dashboard = document.getElementById("user-dashboard");
-            if (dashboard) {
-                dashboard.style.display = "none";
-            }
+            if (dashboard) dashboard.style.display = "none";
 
             updateNavbar();
-            alert("Logged out successfully 👋");
 
-            // Optional: homepage par laao
-            window.location.href = "frontend.html";
+            // ✅ ALWAYS go to home
+            window.location.href = "index.html";
         }
+
 
 
 

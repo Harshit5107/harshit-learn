@@ -68,12 +68,12 @@ const role = localStorage.getItem("role");
 
 if (!token) {
   alert("Login required");
-  location.href = "frontend.html";
+  location.href = "index.html";
 }
 
 if (role !== "skill_provider") {
   alert("Only Skill Providers can create courses");
-  location.href = "frontend.html";
+  location.href = "index.html";
 }
 
 async function createCourse() {
@@ -122,7 +122,7 @@ async function createCourse() {
     }
 
     alert("Course created & published successfully ✅");
-    location.href = "frontend.html";
+    location.href = "index.html";
 
   } catch (err) {
     console.error(err);
