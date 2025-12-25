@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Start Learning | Harshit-Learn</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <style>
+    body {
+      background:#0B0F1A;
+      color:#F1F5F9;
+      font-family: Inter, sans-serif;
+      padding:40px;
+    }
+
+    .btn-back {
+      position: fixed;
+      top: 25px;
+      left: 25px;
+      padding: 10px 16px;
+      border-radius: 25px;
+      border: 1px solid #00F7FF;
+      background: rgba(15,23,42,0.9);
+      color: #00F7FF;
+      font-weight: 600;
+      cursor: pointer;
+      z-index: 9999;
+    }
+
+    .box {
+      max-width:900px;
+      margin:auto;
+      background:#0F172A;
+      padding:30px;
+      border-radius:16px;
+      border:1px solid rgba(0,247,255,0.2);
+    }
+
+    h1 { color:#00F7FF; }
+
+    .lesson {
+      background:#1E293B;
+      padding:15px;
+      border-radius:10px;
+      margin-bottom:12px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+    }
+
+    .btn {
+      padding:8px 14px;
+      border-radius:20px;
+      border:none;
+      cursor:pointer;
+      font-weight:600;
+    }
+
+    .btn-primary {
+      background:#00FF9D;
+      color:#0B0F1A;
+    }
+
+    .btn-disabled {
+      background: rgba(255,255,255,0.08);
+      color:#94A3B8;
+      cursor:not-allowed;
+    }
+
+    .progress-box {
+      margin-top:25px;
+      background:#1E293B;
+      padding:15px;
+      border-radius:12px;
+    }
+
+    .progress-bar {
+      height:10px;
+      background:#0B0F1A;
+      border-radius:10px;
+      overflow:hidden;
+      margin-top:10px;
+    }
+
+    .progress-fill {
+      height:100%;
+      background:linear-gradient(90deg,#00FF9D,#00F7FF);
+      width:0%;
+      transition:width 0.3s ease;
+    }
+
+    .completed-banner {
+      display:none;
+      margin-top:18px;
+      padding:12px;
+      border-radius:10px;
+      background: rgba(0,255,157,0.08);
+      color:#00FF9D;
+      font-weight:700;
+      text-align:center;
+    }
+  </style>
+</head>
+<body>
+
+<button class="btn-back" onclick="goBack()">⬅ Back</button>
+
+<div class="box">
+  <h1 id="courseTitle">Loading...</h1>
+  <p id="courseDesc"></p>
+
+  <div id="completedBanner" class="completed-banner">
+    🎉 Congratulations — Course Completed!
+  </div>
+
+  <div class="progress-box">
+    <strong>Progress:</strong>
+    <span id="progressText">0%</span>
+    <div class="progress-bar">
+      <div id="progressFill" class="progress-fill"></div>
+    </div>
+  </div>
+
+  <h3 style="margin-top:30px;">📘 Course Content</h3>
+  <div id="lessons"></div>
+</div>
+
+<script>
+const API_BASE = "https://harshit-learn.onrender.com/api";
+
+const token = localStorage.getItem("token");
+
+if (!token) {
+  alert("Login required");
+  location.href = "frontend.html";
+}
+
+// get user id from jwt
+function getUserId(tok) {
+  const payload = JSON.parse(atob(tok.split(".")[1]));
+  return payload.id || payload._id;
+}
+
+const userId = getUserId(token);
+const courseId = new URLSearchParams(window.location.search).get("id");
+
+let totalLessons = 0;
+let currentProgress = 0;
+
+function goBack() {
+  history.back();
+}
+
+function updateUI(val) {
+  document.getElementById("progressText").innerText = val + "%";
+  document.getElementById("progressFill").style.width = val + "%";
+
+  if (val >= 100) {
+    document.getElementById("completedBanner").style.display = "block";
+    document.querySelectorAll(".lesson .btn").forEach(b=>{
+      b.disabled = true;
+      b.className = "btn btn-disabled";
+      b.innerText = "Completed";
+    });
+  }
+}
+
+async function saveProgress(value) {
+  await fetch(`${API}/courses/${courseId}/progress`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + token
+    },
+    body: JSON.stringify({ value })
+  });
+}
+
+async function loadCourse() {
+  const res = await fetch(`${API}/courses/${courseId}`, {
+    headers: { Authorization: "Bearer " + token }
+  });
+  const data = await res.json();
+  const course = data.course || data;
+
+
+  document.getElementById("courseTitle").innerText = course.title;
+  document.getElementById("courseDesc").innerText = course.description;
+
+  const lessons = course.lessons?.length
+    ? course.lessons
+    : [{title:"Lesson 1"},{title:"Lesson 2"},{title:"Lesson 3"}];
+
+  totalLessons = lessons.length;
+
+  const p = course.progress?.find(p => p.student == userId);
+  currentProgress = p ? p.value : 0;
+  updateUI(currentProgress);
+
+  const root = document.getElementById("lessons");
+  root.innerHTML = "";
+
+  lessons.forEach((l, i) => {
+    const div = document.createElement("div");
+    div.className = "lesson";
+
+    const t = document.createElement("div");
+    t.innerText = l.title;
+
+    const btn = document.createElement("button");
+    btn.className = "btn btn-primary";
+    btn.innerText = "Complete";
+    btn.onclick = async () => {
+      let next = Math.round(((i + 1) / totalLessons) * 100);
+      if (next <= currentProgress) return;
+
+      currentProgress = next;
+      updateUI(next);
+      await saveProgress(next);
+
+      btn.disabled = true;
+      btn.className = "btn btn-disabled";
+      btn.innerText = "Completed";
+    };
+
+    div.appendChild(t);
+    div.appendChild(btn);
+    root.appendChild(div);
+  });
+}
+
+loadCourse();
+</script>
+
+</body>
+</html>
