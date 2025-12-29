@@ -4,12 +4,15 @@ const jwt = require("jsonwebtoken");
 
 /**
  * ===============================
- * 🔹 GENERATE JWT
+ * 🔹 GENERATE JWT (FIXED)
  * ===============================
  */
-const generateToken = (id) => {
+const generateToken = (id, role) => {
   return jwt.sign(
-    { id },
+    {
+      id,
+      role, // 🔥 ROLE NOW INCLUDED IN JWT
+    },
     process.env.JWT_SECRET || "HARSHIT_SECRET_KEY",
     { expiresIn: "7d" }
   );
@@ -46,7 +49,7 @@ const registerUser = async (req, res) => {
       name,
       email,
       password: hashedPassword,
-      role: "Student",
+      role: "student", // ✅ standardized role
       skills: [],
     });
 
@@ -102,7 +105,8 @@ const loginUser = async (req, res) => {
       });
     }
 
-    const token = generateToken(user._id);
+    // 🔥 FIXED TOKEN (ROLE INCLUDED)
+    const token = generateToken(user._id, user.role);
 
     res.json({
       success: true,
@@ -113,7 +117,7 @@ const loginUser = async (req, res) => {
         name: user.name,
         email: user.email,
         role: user.role,
-        skills: user.skills || [],   // 🔥 IMPORTANT FIX
+        skills: user.skills || [],
       },
     });
   } catch (error) {
@@ -127,7 +131,7 @@ const loginUser = async (req, res) => {
 
 /**
  * ===============================
- * 🔹 GET LOGGED-IN USER (NEW)
+ * 🔹 GET LOGGED-IN USER
  * ===============================
  */
 const getMe = async (req, res) => {
