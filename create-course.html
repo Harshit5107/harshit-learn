@@ -88,11 +88,11 @@ async function createCourse() {
 
   try {
     // 1️⃣ CREATE COURSE
-    const res = await fetch(`${API}/courses`, {
+    const res = await fetch(`${API_BASE}/courses`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: "Bearer " + token
+        "Authorization": "Bearer " + token
       },
       body: JSON.stringify({ title, description, category })
     });
@@ -106,15 +106,13 @@ async function createCourse() {
 
     const courseId = data.course._id;
 
-    // 2️⃣ AUTO-PUBLISH COURSE 🔥
-    const publishRes = await fetch(`${API}/courses/${courseId}/publish`, {
+    // 2️⃣ AUTO-PUBLISH COURSE
+    const publishRes = await fetch(`${API_BASE}/courses/${courseId}/publish`, {
       method: "PUT",
       headers: {
-        Authorization: "Bearer " + token
+        "Authorization": "Bearer " + token
       }
     });
-
-    const publishData = await publishRes.json();
 
     if (!publishRes.ok) {
       alert("Course created but publish failed ❌");
