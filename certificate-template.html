@@ -152,7 +152,8 @@
     <p class="label">This certificate is proudly awarded to</p>
   </div>
 
-  <div class="student-name" id="studentName">Verified Student</div>
+  <!-- 🔥 REAL USER NAME WILL COME HERE -->
+  <div class="student-name" id="studentName">Loading...</div>
 
   <p class="label" style="text-align:center;">For successfully completing</p>
   <div class="course" id="courseName">Course</div>
@@ -188,23 +189,8 @@
   const courseId = params.get("courseId");
   const token = localStorage.getItem("token");
 
-  function getUserNameFromToken() {
-    try {
-      if (!token) return null;
-      const payload = JSON.parse(atob(token.split(".")[1]));
-      return payload.name || payload.username || payload.fullName || null;
-    } catch {
-      return null;
-    }
-  }
-
-  function setStudentNameFromJWT() {
-    const name = getUserNameFromToken();
-    $("studentName").innerText = name || "Verified Student";
-  }
-
   function fallback() {
-    setStudentNameFromJWT();
+    $("studentName").innerText = "Student";
     $("courseName").innerText = "AI for Beginners";
     $("completionDate").innerText = new Date().toLocaleDateString("en-GB");
     $("certificateId").innerText = "HL-" + Date.now();
@@ -212,8 +198,6 @@
   }
 
   async function loadCertificate() {
-    setStudentNameFromJWT();
-
     try {
       if (!token || !courseId) {
         fallback();
@@ -232,11 +216,12 @@
 
       const data = await res.json();
 
+      // 🔥 REAL NAME FROM BACKEND
+      $("studentName").innerText = data.user?.name || "Student";
       $("courseName").innerText = data.course?.title || "Course";
       $("completionDate").innerText =
-        new Date(data.issuedAt || Date.now()).toLocaleDateString("en-GB");
-      $("certificateId").innerText =
-        data.certificateId || "HL-" + Date.now();
+        new Date(data.issuedAt).toLocaleDateString("en-GB");
+      $("certificateId").innerText = data.certificateId;
 
       $("status").innerText = "Loaded";
     } catch {
