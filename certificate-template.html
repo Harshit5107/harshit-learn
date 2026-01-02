@@ -9,138 +9,193 @@
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;500;700;900&family=Orbitron:wght@500;700&display=swap" rel="stylesheet">
 
   <style>
-    :root{ --neon:#00F7FF; --bg1:#0a1929; --bg2:#020617; --muted:#94a3b8; }
-    html,body{ height:100%; margin:0; padding:0; }
-    body {
-      background: #070814;
-      font-family: 'Montserrat', sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      color: #fff;
+    :root{
+      --neon:#00F7FF;
+      --bg1:#0a1929;
+      --bg2:#020617;
+      --muted:#94a3b8;
     }
 
-    /* Certificate container sized exactly for PDF capture.
-       Keep padding inside so nothing is cut. */
-    .certificate-container {
-      width: 1120px;
-      /* set exact visual height (content + padding) */
-      min-height: 792px;
-      padding: 60px;
-      background: linear-gradient(135deg, var(--bg1), var(--bg2));
-      border: 1px solid rgba(0, 247, 255, 0.18);
-      box-shadow: 0 0 40px rgba(0, 247, 255, 0.22);
-      position: relative;
-      box-sizing: border-box;
-      overflow: visible; /* allow decorative corners show */
-      page-break-inside: avoid;
-      -webkit-print-color-adjust: exact;
+    html,body{
+      height:100%;
+      margin:0;
+      padding:0;
     }
 
-    .corner { position: absolute; width: 80px; height: 80px; border: 2px solid var(--neon); box-sizing: border-box; }
-    .tl { top: 12px; left: 12px; border-right: none; border-bottom: none; }
-    .tr { top: 12px; right: 12px; border-left: none; border-bottom: none; }
-    .bl { bottom: 12px; left: 12px; border-right: none; border-top: none; }
-    .br { bottom: 12px; right: 12px; border-left: none; border-top: none; }
-    .header { text-align: center; margin-bottom: 20px; }
-    .logo { width: 260px; height: auto; margin: 0 auto 8px; display: block; filter: drop-shadow(0 0 26px rgba(0,247,255,0.9)); }
-    .actions { margin-top: 12px; display:flex; justify-content:center; gap:12px; }
-    .btn { padding:10px 18px; border-radius:8px; border:1px solid var(--neon); background:var(--neon); color:#021020; font-weight:700; cursor:pointer; box-shadow: 0 6px 18px rgba(0,0,0,0.35); }
-    .no-print { display:inline-block; }
-    @media print { .no-print { display: none !important; } }
-
-    .title { text-align:center; margin: 36px 0 8px; }
-    .title h1 { font-family: 'Orbitron', sans-serif; font-size: 46px; text-shadow: 0 0 15px rgba(0,247,255,0.7); margin: 0; }
-    .label { color: var(--muted); font-size: 14px; margin-top:8px; }
-    .student-name {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 48px;
-      margin: 20px 0;
-      font-weight: 800;
-      color: #00f7ff;
-      text-align: center;
-      letter-spacing: 2px;
+    body{
+      background:#070814;
+      font-family:'Montserrat',sans-serif;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      color:#fff;
     }
-    .course { font-size: 26px; font-weight: 700; margin: 8px 0; color: #e6eef8; }
-    .content { text-align:center; padding: 6px 32px; }
 
-    .details { display: flex; justify-content: space-between; margin-top: 40px; gap: 20px; flex-wrap: wrap; }
-    .detail { text-align: center; flex: 1; min-width: 180px; }
-    .detail span { display:block; color: var(--muted); font-size: 13px; }
-    .detail strong { font-size: 16px; margin-top:6px; display:block; }
+    .certificate-container{
+      width:1120px;
+      min-height:792px;
+      padding:60px;
+      background:linear-gradient(135deg,var(--bg1),var(--bg2));
+      border:1px solid rgba(0,247,255,0.18);
+      box-shadow:0 0 40px rgba(0,247,255,0.22);
+      position:relative;
+      box-sizing:border-box;
+    }
 
-    .signature { text-align: center; margin-top: 46px; }
-    .line { width: 260px; height: 1px; background: linear-gradient(90deg, transparent, var(--neon), transparent); margin: auto; }
+    .corner{
+      position:absolute;
+      width:80px;
+      height:80px;
+      border:2px solid var(--neon);
+    }
+    .tl{top:12px;left:12px;border-right:none;border-bottom:none;}
+    .tr{top:12px;right:12px;border-left:none;border-bottom:none;}
+    .bl{bottom:12px;left:12px;border-right:none;border-top:none;}
+    .br{bottom:12px;right:12px;border-left:none;border-top:none;}
 
-    /* status (debug) bubble — we'll hide it when making PDF */
-    .status { position: fixed; right: 12px; top: 12px; background: rgba(0,0,0,0.5); color:#fff; padding:8px 10px; border-radius:8px; font-size:13px; z-index:9999; }
+    .header{text-align:center;margin-bottom:20px;}
+    .logo{
+      width:260px;
+      margin:0 auto 8px;
+      display:block;
+      filter:drop-shadow(0 0 26px rgba(0,247,255,0.9));
+    }
+
+    .btn{
+      padding:10px 18px;
+      border-radius:8px;
+      border:1px solid var(--neon);
+      background:var(--neon);
+      color:#021020;
+      font-weight:700;
+      cursor:pointer;
+    }
+
+    .title{text-align:center;margin:36px 0 8px;}
+    .title h1{
+      font-family:'Orbitron',sans-serif;
+      font-size:46px;
+      margin:0;
+      text-shadow:0 0 15px rgba(0,247,255,0.7);
+    }
+
+    .label{color:var(--muted);font-size:14px;margin-top:8px;}
+
+    .student-name{
+      font-family:'Orbitron',sans-serif;
+      font-size:48px;
+      margin:20px 0;
+      font-weight:800;
+      color:#00f7ff;
+      text-align:center;
+      letter-spacing:2px;
+    }
+
+    .course{
+      font-size:26px;
+      font-weight:700;
+      margin:8px 0;
+      color:#e6eef8;
+      text-align:center;
+    }
+
+    .details{
+      display:flex;
+      justify-content:space-between;
+      margin-top:40px;
+      gap:20px;
+      flex-wrap:wrap;
+    }
+
+    .detail{text-align:center;flex:1;min-width:180px;}
+    .detail span{display:block;color:var(--muted);font-size:13px;}
+    .detail strong{font-size:16px;margin-top:6px;display:block;}
+
+    .signature{text-align:center;margin-top:46px;}
+    .line{
+      width:260px;
+      height:1px;
+      background:linear-gradient(90deg,transparent,var(--neon),transparent);
+      margin:auto;
+    }
+
+    .status{
+      position:fixed;
+      right:12px;
+      top:12px;
+      background:rgba(0,0,0,0.5);
+      color:#fff;
+      padding:8px 10px;
+      border-radius:8px;
+      font-size:13px;
+    }
   </style>
 </head>
 
 <body>
-  <div class="status" id="status">Loading...</div>
 
-  <div class="certificate-container" id="certificate" role="main" aria-label="Certificate">
-    <div class="corner tl"></div>
-    <div class="corner tr"></div>
-    <div class="corner bl"></div>
-    <div class="corner br"></div>
+<div class="status" id="status">Loading…</div>
 
-    <div class="header">
-      <img id="certLogo" src="/assets/logo.png" alt="Harshit-Learn Logo" class="logo" />
-      <div class="actions">
-        <button class="btn no-print" id="downloadBtn" onclick="onDownloadClick()">Download Certificate</button>
-      </div>
+<div class="certificate-container" id="certificate">
+  <div class="corner tl"></div>
+  <div class="corner tr"></div>
+  <div class="corner bl"></div>
+  <div class="corner br"></div>
+
+  <div class="header">
+    <!-- ✅ FIXED LOGO PATH -->
+    <img src="./assets/logo.png" class="logo" alt="Harshit-Learn Logo">
+    <button class="btn" onclick="downloadPDF()">Download Certificate</button>
+  </div>
+
+  <div class="title">
+    <h1>Certificate of Completion</h1>
+    <p class="label">This certificate is proudly awarded to</p>
+  </div>
+
+  <div class="student-name" id="studentName">Student</div>
+
+  <p class="label" style="text-align:center;">For successfully completing</p>
+  <div class="course" id="courseName">Course</div>
+
+  <div class="details">
+    <div class="detail">
+      <span>Completion Date</span>
+      <strong id="completionDate">--</strong>
     </div>
-
-    <div class="title">
-      <h1>Certificate of Completion</h1>
-      <p class="label">This certificate is proudly awarded to</p>
+    <div class="detail">
+      <span>Certificate ID</span>
+      <strong id="certificateId">--</strong>
     </div>
-
-    <div class="content">
-      <div class="student-name" id="studentName">—</div>
-      <p class="label">For successfully completing</p>
-      <div class="course" id="courseName">Loading...</div>
-      <p class="label">Demonstrating dedication and mastery of future-ready AI skills</p>
-    </div>
-
-    <div class="details">
-      <div class="detail">
-        <span>Completion Date</span>
-        <strong id="completionDate">--</strong>
-      </div>
-
-      <div class="detail">
-        <span>Certificate ID</span>
-        <strong id="certificateId">--</strong>
-      </div>
-
-      <div class="detail">
-        <span>Platform</span>
-        <strong>Harshit-Learn AI</strong>
-      </div>
-    </div>
-
-    <div class="signature">
-      <div class="line"></div>
-      <strong>Dr. Anya Sharma</strong>
-      <div class="label">Lead AI Instructor</div>
+    <div class="detail">
+      <span>Platform</span>
+      <strong>Harshit-Learn AI</strong>
     </div>
   </div>
 
-  <!-- html2pdf -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
+  <div class="signature">
+    <div class="line"></div>
+    <strong>Dr. Anya Sharma</strong>
+    <div class="label">Lead AI Instructor</div>
+  </div>
+</div>
 
-  <script>
-  const courseId = new URLSearchParams(window.location.search).get("courseId");
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
+
+<script>
+  const $ = id => document.getElementById(id);
+
+  const params = new URLSearchParams(window.location.search);
+  const courseId = params.get("courseId");
+  const urlName = params.get("name");
   const token = localStorage.getItem("token");
-  const $ = (id) => document.getElementById(id);
 
-  function setFallback(reason) {
-    console.error("CERT ERROR:", reason);
-    $("studentName").innerText = localStorage.getItem("username") || "Student";
+  // ✅ NAME FIX
+  if (urlName) {
+    $("studentName").innerText = decodeURIComponent(urlName);
+  }
+
+  function fallback() {
     $("courseName").innerText = "AI for Beginners";
     $("completionDate").innerText = new Date().toLocaleDateString("en-GB");
     $("certificateId").innerText = "HL-" + Date.now();
@@ -149,112 +204,41 @@
 
   async function loadCertificate() {
     try {
-      if (!token) {
-        setFallback("Token missing");
+      if (!token || !courseId) {
+        fallback();
         return;
       }
-      const res = await fetch(`https://harshit-learn.onrender.com/api";
-${courseId}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      if (!res.ok) {
-        const text = await res.text();
-        setFallback("API failed: " + res.status + " " + text);
-        return;
-      }
-      const data = await res.json();
-      console.log("CERT API DATA:", data);
-      const storedUser =
-      localStorage.getItem("username") ||
-      localStorage.getItem("name") ||
-      localStorage.getItem("userName") ||
-      (localStorage.getItem("user")
-        ? JSON.parse(localStorage.getItem("user")).name
-        : null);
 
-    $("studentName").innerText =
-      data.user?.name ||
-      storedUser ||
-      "Student";
+      const res = await fetch(
+        `https://harshit-learn.onrender.com/api/certificates/${courseId}`,
+        { headers: { Authorization: "Bearer " + token } }
+      );
+
+      if (!res.ok) {
+        fallback();
+        return;
+      }
+
+      const data = await res.json();
 
       $("courseName").innerText = data.course?.title || "Course";
-      $("completionDate").innerText = new Date(data.issuedAt).toLocaleDateString("en-GB");
-      $("certificateId").innerText = data.certificateId;
+      $("completionDate").innerText =
+        new Date(data.issuedAt || Date.now()).toLocaleDateString("en-GB");
+      $("certificateId").innerText =
+        data.certificateId || "HL-" + Date.now();
+
       $("status").innerText = "Loaded";
-    } catch (err) {
-      setFallback(err.message);
+    } catch {
+      fallback();
     }
   }
 
-  window.onload = loadCertificate;
-
-  const urlName = new URLSearchParams(window.location.search).get("name");
-
-$("studentName").innerText =
-  data.user?.name ||
-  urlName ||
-  "Student";
-
-  async function onDownloadClick() {
-    try {
-      const element = $("certificate");
-
-      // hide transient UI that might cause extra pages
-      const statusEl = $("status");
-      const downloadBtn = $("downloadBtn");
-      const statusDisplay = statusEl.style.display;
-      const btnDisplay = downloadBtn.style.display;
-      statusEl.style.display = "none";
-      downloadBtn.style.display = "none";
-
-      // ensure scroll to top of page (prevents html2canvas from capturing viewport offset)
-      window.scrollTo(0, 0);
-
-      // measure element to set jsPDF page exactly to element's pixel size
-      const rect = element.getBoundingClientRect();
-      const w = Math.ceil(rect.width);
-      const h = Math.ceil(rect.height);
-
-      const opt = {
-        margin: 0,
-        filename: "Harshit-Learn-Certificate.pdf",
-        image: { type: "jpeg", quality: 1 },
-        html2canvas: {
-          scale: 2,
-          useCORS: true,
-          scrollX: 0,
-          // give negative scrollY to compensate for any viewport offset
-          scrollY: -window.scrollY,
-          // set the capture area explicitly
-          width: w,
-          height: h,
-          windowWidth: Math.max(document.documentElement.clientWidth, w),
-          windowHeight: Math.max(document.documentElement.clientHeight, h)
-        },
-        jsPDF: {
-          unit: "px",
-          format: [w, h],
-          orientation: "landscape"
-        },
-        pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
-      };
-
-      // create pdf
-      await html2pdf().set(opt).from(element).save();
-
-      // restore UI
-      statusEl.style.display = statusDisplay;
-      downloadBtn.style.display = btnDisplay;
-
-    } catch (err) {
-      console.error("PDF DOWNLOAD FAILED:", err);
-      alert("Failed to download certificate: " + (err.message || err));
-      // restore UI
-      $("status").style.display = "";
-      $("downloadBtn").style.display = "";
-    }
+  function downloadPDF() {
+    html2pdf().from($("certificate")).save("Harshit-Learn-Certificate.pdf");
   }
-  </script>
+
+  loadCertificate();
+</script>
 
 </body>
 </html>
