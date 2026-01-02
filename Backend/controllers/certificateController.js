@@ -5,14 +5,15 @@ const User = require("../models/User");
 
 exports.getCertificateData = async (req, res) => {
   try {
-    // 🔐 safest way (handles id or _id)
-    const userId = req.user.id || req.user._id;
+    // 🔐 logged-in user from auth middleware
+    const userId = req.user.id;
     const { courseId } = req.params;
 
     if (!userId || !courseId) {
       return res.status(400).json({ message: "Missing userId or courseId" });
     }
 
+    // fetch user + course
     const user = await User.findById(userId).select("name email");
     const course = await Course.findById(courseId).select("title");
 
@@ -27,7 +28,7 @@ exports.getCertificateData = async (req, res) => {
     // find or create certificate
     let certificate = await Certificate.findOne({
       user: userId,
-      course: courseId
+      course: courseId,
     });
 
     if (!certificate) {
@@ -35,20 +36,21 @@ exports.getCertificateData = async (req, res) => {
         user: userId,
         course: courseId,
         certificateId: `HL-${Date.now()}`,
-        issuedAt: new Date() // ✅ FIX
+        issuedAt: new Date(),
       });
     }
 
-    // ✅ clean, predictable response
+    // ✅ FINAL RESPONSE (frontend-friendly)
     res.status(200).json({
       user: {
-        name: user.name
+        name: user.name, // 🔥 THIS is the logged-in user's name
+        email: user.email,
       },
       course: {
-        title: course.title
+        title: course.title,
       },
       certificateId: certificate.certificateId,
-      issuedAt: certificate.issuedAt
+      issuedAt: certificate.issuedAt,
     });
 
   } catch (err) {

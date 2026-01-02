@@ -143,9 +143,7 @@
   <div class="corner br"></div>
 
   <div class="header">
-    <!-- ✅ FIXED LOGO PATH -->
     <img src="assets/logo.png" class="logo" alt="">
-
     <button class="btn" onclick="downloadPDF()">Download Certificate</button>
   </div>
 
@@ -154,7 +152,7 @@
     <p class="label">This certificate is proudly awarded to</p>
   </div>
 
-  <div class="student-name" id="studentName">Student</div>
+  <div class="student-name" id="studentName">Verified Student</div>
 
   <p class="label" style="text-align:center;">For successfully completing</p>
   <div class="course" id="courseName">Course</div>
@@ -184,34 +182,38 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
 
 <script>
-
-  
   const $ = id => document.getElementById(id);
 
   const params = new URLSearchParams(window.location.search);
   const courseId = params.get("courseId");
-  const urlName = params.get("name");
   const token = localStorage.getItem("token");
 
-  function setStudentName() {
-  if (urlName && $("studentName")) {
-    $("studentName").innerText = decodeURIComponent(urlName);
+  function getUserNameFromToken() {
+    try {
+      if (!token) return null;
+      const payload = JSON.parse(atob(token.split(".")[1]));
+      return payload.name || payload.username || payload.fullName || null;
+    } catch {
+      return null;
+    }
   }
-}
 
+  function setStudentNameFromJWT() {
+    const name = getUserNameFromToken();
+    $("studentName").innerText = name || "Verified Student";
+  }
 
   function fallback() {
-  setStudentName(); // 🔒 name never lost
-
-  $("courseName").innerText = "AI for Beginners";
-  $("completionDate").innerText = new Date().toLocaleDateString("en-GB");
-  $("certificateId").innerText = "HL-" + Date.now();
-  $("status").innerText = "Using fallback data";
-}
-
+    setStudentNameFromJWT();
+    $("courseName").innerText = "AI for Beginners";
+    $("completionDate").innerText = new Date().toLocaleDateString("en-GB");
+    $("certificateId").innerText = "HL-" + Date.now();
+    $("status").innerText = "Using fallback data";
+  }
 
   async function loadCertificate() {
-    setStudentName(); 
+    setStudentNameFromJWT();
+
     try {
       if (!token || !courseId) {
         fallback();

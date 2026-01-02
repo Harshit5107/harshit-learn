@@ -12,19 +12,22 @@ const protect = (req, res, next) => {
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    // 🔥 FIX: include BOTH id and role from JWT
+    // ✅ Attach ALL required user info from JWT
     req.user = {
       id: decoded.id || decoded._id || decoded.userId,
-      role: decoded.role, // ✅ THIS WAS THE MISSING PIECE
+      name: decoded.name || decoded.username || decoded.fullName, // 🔥 IMPORTANT
+      role: decoded.role,
+      email: decoded.email,
     };
 
+    // 🔒 Safety checks
     if (!req.user.id) {
-      console.error("JWT payload missing user id:", decoded);
-      return res.status(401).json({ message: "Invalid token payload" });
+      console.error("JWT missing user id:", decoded);
+      return res.status(401).json({ message: "Invalid token payload (id missing)" });
     }
 
     if (!req.user.role) {
-      console.error("JWT payload missing role:", decoded);
+      console.error("JWT missing role:", decoded);
       return res.status(403).json({ message: "User role missing in token" });
     }
 
