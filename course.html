@@ -12,7 +12,6 @@
       font-family: Inter, sans-serif;
       padding:40px;
     }
-
     .btn-back {
       position: fixed;
       top: 25px;
@@ -26,7 +25,6 @@
       cursor: pointer;
       z-index: 9999;
     }
-
     .box {
       max-width:900px;
       margin:auto;
@@ -35,9 +33,7 @@
       border-radius:16px;
       border:1px solid rgba(0,247,255,0.2);
     }
-
     h1 { color:#00F7FF; }
-
     .lesson {
       background:#1E293B;
       padding:15px;
@@ -47,7 +43,6 @@
       justify-content:space-between;
       align-items:center;
     }
-
     .btn {
       padding:8px 14px;
       border-radius:20px;
@@ -55,25 +50,21 @@
       cursor:pointer;
       font-weight:600;
     }
-
     .btn-primary {
       background:#00FF9D;
       color:#0B0F1A;
     }
-
     .btn-disabled {
       background: rgba(255,255,255,0.08);
       color:#94A3B8;
       cursor:not-allowed;
     }
-
     .progress-box {
       margin-top:25px;
       background:#1E293B;
       padding:15px;
       border-radius:12px;
     }
-
     .progress-bar {
       height:10px;
       background:#0B0F1A;
@@ -81,14 +72,12 @@
       overflow:hidden;
       margin-top:10px;
     }
-
     .progress-fill {
       height:100%;
       background:linear-gradient(90deg,#00FF9D,#00F7FF);
       width:0%;
       transition:width 0.3s ease;
     }
-
     .completed-banner {
       display:none;
       margin-top:18px;
@@ -103,7 +92,7 @@
 </head>
 <body>
 
-<button class="btn-back" onclick="goBack()">⬅ Back</button>
+<button class="btn-back" onclick="history.back()">⬅ Back</button>
 
 <div class="box">
   <h1 id="courseTitle">Loading...</h1>
@@ -126,8 +115,7 @@
 </div>
 
 <script>
-const API_BASE = "https://harshit-learn.onrender.com/api";
-
+const API = "https://harshit-learn.onrender.com/api"; // ✅ FIXED
 const token = localStorage.getItem("token");
 
 if (!token) {
@@ -135,10 +123,14 @@ if (!token) {
   location.href = "index.html";
 }
 
-// get user id from jwt
+// decode user id safely
 function getUserId(tok) {
-  const payload = JSON.parse(atob(tok.split(".")[1]));
-  return payload.id || payload._id;
+  try {
+    const payload = JSON.parse(atob(tok.split(".")[1]));
+    return payload.id;
+  } catch {
+    return null;
+  }
 }
 
 const userId = getUserId(token);
@@ -147,21 +139,12 @@ const courseId = new URLSearchParams(window.location.search).get("id");
 let totalLessons = 0;
 let currentProgress = 0;
 
-function goBack() {
-  history.back();
-}
-
 function updateUI(val) {
   document.getElementById("progressText").innerText = val + "%";
   document.getElementById("progressFill").style.width = val + "%";
 
   if (val >= 100) {
     document.getElementById("completedBanner").style.display = "block";
-    document.querySelectorAll(".lesson .btn").forEach(b=>{
-      b.disabled = true;
-      b.className = "btn btn-disabled";
-      b.innerText = "Completed";
-    });
   }
 }
 
@@ -177,56 +160,59 @@ async function saveProgress(value) {
 }
 
 async function loadCourse() {
-  const res = await fetch(`${API}/courses/${courseId}`, {
-    headers: { Authorization: "Bearer " + token }
-  });
-  const data = await res.json();
-  const course = data.course || data;
+  try {
+    const res = await fetch(`${API}/courses/${courseId}`, {
+      headers: { Authorization: "Bearer " + token }
+    });
 
+    const data = await res.json();
+    const course = data.course || data;
 
-  document.getElementById("courseTitle").innerText = course.title;
-  document.getElementById("courseDesc").innerText = course.description;
+    document.getElementById("courseTitle").innerText = course.title;
+    document.getElementById("courseDesc").innerText = course.description || "";
 
-  const lessons = course.lessons?.length
-    ? course.lessons
-    : [{title:"Lesson 1"},{title:"Lesson 2"},{title:"Lesson 3"}];
+    const lessons = course.lessons?.length
+      ? course.lessons
+      : [{title:"Lesson 1"},{title:"Lesson 2"},{title:"Lesson 3"}];
 
-  totalLessons = lessons.length;
+    totalLessons = lessons.length;
 
-  const p = course.progress?.find(p => p.student == userId);
-  currentProgress = p ? p.value : 0;
-  updateUI(currentProgress);
+    const root = document.getElementById("lessons");
+    root.innerHTML = "";
 
-  const root = document.getElementById("lessons");
-  root.innerHTML = "";
+    lessons.forEach((l, i) => {
+      const div = document.createElement("div");
+      div.className = "lesson";
 
-  lessons.forEach((l, i) => {
-    const div = document.createElement("div");
-    div.className = "lesson";
+      const t = document.createElement("div");
+      t.innerText = l.title;
 
-    const t = document.createElement("div");
-    t.innerText = l.title;
+      const btn = document.createElement("button");
+      btn.className = "btn btn-primary";
+      btn.innerText = "Complete";
 
-    const btn = document.createElement("button");
-    btn.className = "btn btn-primary";
-    btn.innerText = "Complete";
-    btn.onclick = async () => {
-      let next = Math.round(((i + 1) / totalLessons) * 100);
-      if (next <= currentProgress) return;
+      btn.onclick = async () => {
+        const next = Math.round(((i + 1) / totalLessons) * 100);
+        if (next <= currentProgress) return;
 
-      currentProgress = next;
-      updateUI(next);
-      await saveProgress(next);
+        currentProgress = next;
+        updateUI(next);
+        await saveProgress(next);
 
-      btn.disabled = true;
-      btn.className = "btn btn-disabled";
-      btn.innerText = "Completed";
-    };
+        btn.disabled = true;
+        btn.className = "btn btn-disabled";
+        btn.innerText = "Completed";
+      };
 
-    div.appendChild(t);
-    div.appendChild(btn);
-    root.appendChild(div);
-  });
+      div.appendChild(t);
+      div.appendChild(btn);
+      root.appendChild(div);
+    });
+
+  } catch (err) {
+    console.error(err);
+    alert("Failed to load course");
+  }
 }
 
 loadCourse();
