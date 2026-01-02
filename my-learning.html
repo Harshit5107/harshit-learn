@@ -188,23 +188,17 @@
   }
 
   async function downloadCertificate(courseId) {
-  const token = localStorage.getItem("token");
-  if (!token) {
-    alert("Please login first");
-    return;
-  }
-
   const userName =
     localStorage.getItem("username") ||
     localStorage.getItem("name") ||
     "Student";
 
   window.open(
-      `./certificate-template.html?courseId=${courseId}&name=${encodeURIComponent(userName)}`,
-      "_blank"
-    );
-
+    `./certificate-template.html?courseId=${courseId}&name=${encodeURIComponent(userName)}`,
+    "_blank"
+  );
 }
+
 
 
   async function loadMyCourses() {
