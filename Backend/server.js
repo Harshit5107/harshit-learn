@@ -17,7 +17,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 /* ===============================
-   🔥 SERVE FRONTEND
+   🔥 SERVE FRONTEND (optional)
 ================================ */
 app.use(express.static(path.join(__dirname, "../Frontend")));
 
@@ -30,7 +30,7 @@ app.use("/api/courses", require("./routes/courseRoutes"));
 app.use("/api/certificates", require("./routes/certificateRoutes"));
 
 /* ===============================
-   🔹 ROOT FRONTEND ROUTE (FIXED)
+   🔹 ROOT
 ================================ */
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "../Frontend/frontend.html"));
