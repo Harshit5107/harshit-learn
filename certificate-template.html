@@ -184,6 +184,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
 
 <script>
+
+  
   const $ = id => document.getElementById(id);
 
   const params = new URLSearchParams(window.location.search);
@@ -191,19 +193,25 @@
   const urlName = params.get("name");
   const token = localStorage.getItem("token");
 
-  // ✅ NAME FIX
-  if (urlName) {
+  function setStudentName() {
+  if (urlName && $("studentName")) {
     $("studentName").innerText = decodeURIComponent(urlName);
   }
+}
+
 
   function fallback() {
-    $("courseName").innerText = "AI for Beginners";
-    $("completionDate").innerText = new Date().toLocaleDateString("en-GB");
-    $("certificateId").innerText = "HL-" + Date.now();
-    $("status").innerText = "Using fallback data";
-  }
+  setStudentName(); // 🔒 name never lost
+
+  $("courseName").innerText = "AI for Beginners";
+  $("completionDate").innerText = new Date().toLocaleDateString("en-GB");
+  $("certificateId").innerText = "HL-" + Date.now();
+  $("status").innerText = "Using fallback data";
+}
+
 
   async function loadCertificate() {
+    setStudentName(); 
     try {
       if (!token || !courseId) {
         fallback();
